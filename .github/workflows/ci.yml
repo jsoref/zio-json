@@ -13,6 +13,22 @@ on:
       - published
 
 jobs:
+  secrets:
+    runs-on: ubuntu-latest
+    outputs:
+      secrets: ${{ steps.secrets.outputs.secrets }}
+    steps:
+      - name: secrets
+        id: secrets
+        env:
+          HAS_PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE != '' }}
+          HAS_PGP_SECRET: ${{ secrets.PGP_SECRET != '' }}
+          HAS_SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD != '' }}
+          HAS_SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME != '' }}
+        shell: bash
+        if: env.HAS_PGP_PASSPHRASE == 'true' && env.HAS_PGP_SECRET == 'true' && env.HAS_SONATYPE_PASSWORD == 'true' && env.HAS_SONATYPE_USERNAME == 'true'
+        run: echo ::set-output name=secrets::true
+
   lint:
     runs-on: ubuntu-20.04
     timeout-minutes: 30
@@ -111,8 +127,10 @@ jobs:
   publish:
     runs-on: ubuntu-20.04
     timeout-minutes: 60
-    needs: [ci]
-    if: github.event_name != 'pull_request'
+    needs:
+    - ci
+    - secrets
+    if: ${{ github.event_name != 'pull_request' && needs.secrets.outputs.secrets }}
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v3.0.2
