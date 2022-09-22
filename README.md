@@ -172,7 +172,7 @@ A popular alternative way to encode sealed traits:
 {"type":"omena", "bad":false}
 ```
 
-is discouraged for performance reasons. However, if we have no choice in the matter, it may be accomodated with the `@jsonDiscriminator` annotation
+is discouraged for performance reasons. However, if we have no choice in the matter, it may be accommodated with the `@jsonDiscriminator` annotation
 
 ```scala
 @jsonDiscriminator("type") sealed trait Fruit
@@ -234,7 +234,7 @@ object FruitCount {
 }
 ```
 
-Another usecase is if we want to encode a `case class` as an array of values, rather than an object with named fields. Such an encoding is very efficient because the messages are smaller and require less processing, but are very strict schemas that cannot be upgraded.
+Another use case is if we want to encode a `case class` as an array of values, rather than an object with named fields. Such an encoding is very efficient because the messages are smaller and require less processing, but are very strict schemas that cannot be upgraded.
 
 ```scala
 case class Things(s: String, i: Int, b: Boolean)
