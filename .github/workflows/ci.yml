@@ -104,15 +104,22 @@ jobs:
   ci:
     runs-on: ubuntu-20.04
     needs: [lint, mdoc, benchmarks, test]
+    outputs:
+      can-publish: ${{ steps.ci.outputs.can-publish }}
     steps:
       - name: Aggregate of lint, and all tests
-        run: echo "ci passed"
+        id: ci
+        env:
+          CAN_PUBLISH: ${{ secrets.PGP_PASSPHRASE && secrets.PGP_SECRET && secrets.SONATYPE_PASSWORD && secrets.SONATYPE_USERNAME }}
+        run: |
+          echo "ci passed"
+          echo "can-publish=$CAN_PUBLISH" >> "$GITHUB_OUTPUT"
 
   publish:
     runs-on: ubuntu-20.04
     timeout-minutes: 60
     needs: [ci]
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && needs.ci.outputs.can-publish
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v3.3.0
